@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="430" viewBox="0 0 720 430" font-family="Menlo, Consolas, monospace" font-size="14">
+  <rect width="720" height="430" rx="10" fill="#101418"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f56"/>
+  <circle cx="44" cy="22" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="22" r="6" fill="#27c93f"/>
+  <text x="360" y="27" fill="#8b949e" text-anchor="middle" font-size="12">corkd — the shared blackboard your agents were missing</text>
+  <g fill="#c9d1d9">
+    <text x="24" y="60"><tspan fill="#8b949e"># agent A takes the lock; the TTL frees it if A crashes</tspan></text>
+    <text x="24" y="84"><tspan fill="#7ee787">agent-a$</tspan> corkd set --if-absent --ttl 30s lock/deploy agent-a</text>
+    <text x="24" y="106">ok key=lock/deploy version=2 <tspan fill="#79c0ff">ttl_ms=30000</tspan></text>
+    <text x="24" y="138"><tspan fill="#8b949e"># agent B loses the race — exit code 1, no clobber</tspan></text>
+    <text x="24" y="162"><tspan fill="#7ee787">agent-b$</tspan> corkd set --if-absent --ttl 30s lock/deploy agent-b</text>
+    <text x="24" y="184"><tspan fill="#f85149">corkd: exists: key already exists</tspan></text>
+    <text x="24" y="216"><tspan fill="#8b949e"># so B blocks until the lock is gone — no polling loop</tspan></text>
+    <text x="24" y="240"><tspan fill="#7ee787">agent-b$</tspan> corkd wait --gone --timeout 60s lock/deploy</text>
+    <text x="24" y="262">gone key=lock/deploy</text>
+    <text x="24" y="294"><tspan fill="#8b949e"># meanwhile, anyone can watch the whole board live</tspan></text>
+    <text x="24" y="318"><tspan fill="#7ee787">$</tspan> corkd watch --state lock/</text>
+    <text x="24" y="340" font-size="12">{"event":"put","key":"lock/deploy","value":"agent-a","version":2,<tspan fill="#d2a8ff">"seq":2</tspan>}</text>
+    <text x="24" y="360" font-size="12">{"event":"sync",<tspan fill="#d2a8ff">"seq":2</tspan>}</text>
+    <text x="24" y="380" font-size="12">{"event":"del","key":"lock/deploy","version":2,<tspan fill="#d2a8ff">"seq":3</tspan>}</text>
+    <text x="24" y="408"><tspan fill="#8b949e"># one binary, one unix socket, zero dependencies</tspan></text>
+  </g>
+</svg>
